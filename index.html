@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Memória</title>
+    <title>Jogo da Memória - FIEMG</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -12,27 +14,63 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background-image: linear-gradient(rgba(35, 58, 138, 0.88), rgba(83, 83, 83, 0.92)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            justify-content: space-between; /* Distribui topo, meio e base pela tela toda */
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
+            padding: 5vh 0; /* Margem no topo e embaixo */
+        }
+
+        /* --- CABEÇALHO (TÍTULO E DASHBOARD) --- */
+        .header {
+            text-align: center;
+            color: #ffffff;
+            width: 90vw;
         }
 
         h1 {
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 2.5rem;
+            font-weight: 900;
+            font-size: clamp(2rem, 7vw, 4rem);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 2vh;
         }
 
+        .dashboard {
+            display: flex;
+            justify-content: center;
+            gap: 5vw;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 700;
+            color: #f7f9f8;
+            text-shadow: 1px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .dashboard span {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* --- TABULEIRO --- */
         .game-board {
             display: grid;
-            grid-template-columns: repeat(4, 150px);
-            grid-template-rows: repeat(3, 150px);
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 2vw;
+            width: 85vw;
+            height: 60vh; /* Ajustado para deixar espaço pro header e footer */
+            max-width: 600px;
             perspective: 1000px;
         }
 
@@ -42,7 +80,7 @@
             position: relative;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
-            transition: transform 0.6s;
+            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1); /* Animação mais fluida */
             cursor: pointer;
         }
 
@@ -60,68 +98,66 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 15px; /* Bordas mais arredondadas como nas fotos */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
 
-        /* Costas da carta (Interrogação) */
         .card-back {
-            background-color: #2c3e50;
+            background: linear-gradient(135deg, #1e8ecd, #233a8a); /* Degradê azul nas cartas */
             color: white;
-            font-size: 45px;
-            font-weight: bold;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
             z-index: 2;
             transition: opacity 0.2s, visibility 0.2s;
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
-        /* Frente da carta (Logomarca) */
         .card-front {
             background-color: #fff;
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
-            padding: 15px;
+            padding: 15%;
             z-index: 1;
         }
 
-        /* SOLUÇÃO DO BUG: Quando a carta virar, mata a interrogação de vez */
-        .card.flip .card-back {
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1;
-        }
+        .card.flip .card-back { opacity: 0; visibility: hidden; z-index: 1; }
+        .card.flip .card-front { z-index: 2; }
+        .card-front img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .card.flip .card-front {
-            z-index: 2;
-        }
-
-        .card-front img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        /* Estilos do Pop-up (Modal) */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
+        /* --- RODAPÉ --- */
+        .footer {
+            height: 5vh;
+            display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Aqui você pode colocar a tag <img> com o logo da FIEMG depois */
+        .logo-placeholder {
+            color: rgba(255,255,255,0.7);
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+        }
+
+        /* --- MODAL DE VITÓRIA --- */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(35, 58, 138, 0.95);
+            display: none;
+            align-items: center; justify-content: center;
             z-index: 10;
         }
 
         .modal-content {
             background: white;
-            padding: 40px;
+            padding: 5vh 5vw;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-width: 400px;
-            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            width: 85vw;
+            max-width: 500px;
             animation: aparecer 0.4s ease;
             z-index: 12;
         }
@@ -131,57 +167,50 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal h2 {
-            font-size: 2rem;
-            color: #27ae60;
-            margin-bottom: 10px;
-        }
-
-        .modal p {
-            font-size: 1.1rem;
-            color: #555;
-            margin-bottom: 25px;
-        }
+        .modal h2 { font-size: clamp(2rem, 6vw, 3rem); color: #233a8a; margin-bottom: 2vh; }
+        .modal p { font-size: clamp(1.2rem, 4vw, 1.5rem); color: #535353; margin-bottom: 1vh; }
+        .modal .destaque { font-weight: 900; color: #1e8ecd; font-size: 1.3em; display: block; margin: 2vh 0; }
 
         .btn-restart {
-            padding: 12px 30px;
-            font-size: 18px;
-            font-weight: bold;
+            margin-top: 2vh;
+            padding: 2vh 6vw;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-weight: 900;
             cursor: pointer;
-            background-color: #27ae60;
+            background-color: #1e8ecd;
             color: white;
             border: none;
             border-radius: 8px;
             transition: background 0.3s, transform 0.2s;
-        }
-
-        .btn-restart:hover {
-            background-color: #2ecc71;
-            transform: scale(1.05);
-        }
-
-        /* Canvas para os confetes */
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 11;
         }
+
+        .btn-restart:hover { background-color: #233a8a; transform: scale(1.05); }
+
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 11; }
     </style>
 </head>
 <body>
 
-    <h1>Jogo da Memória</h1>
+    <div class="header">
+        <h1>Encontre os Pares</h1>
+        <div class="dashboard">
+            <span id="timer-display">00:00</span>
+            <span id="moves-display">0 Jogadas</span>
+        </div>
+    </div>
     
     <div class="game-board" id="game-board"></div>
+
+    <div class="footer">
+        <span class="logo-placeholder">FIEMG</span>
+    </div>
 
     <div class="modal" id="win-modal">
         <div class="modal-content">
             <h2>Parabéns! 🎉</h2>
-            <p>Você encontrou todas as logomarcas!</p>
+            <p>Você completou o desafio em:</p>
+            <span class="destaque" id="final-stats">00:00 e 0 jogadas</span>
             <button class="btn-restart" onclick="iniciarJogo()">Jogar Novamente</button>
         </div>
     </div>
@@ -193,6 +222,9 @@
         const modal = document.getElementById('win-modal');
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
+        const timerDisplay = document.getElementById('timer-display');
+        const movesDisplay = document.getElementById('moves-display');
+        const finalStats = document.getElementById('final-stats');
 
         const imagens = [
             'img/logo1.png', 'img/logo2.png', 'img/logo3.png', 
@@ -207,6 +239,33 @@
         let animacaoConfete;
         let confetes = [];
 
+        // Variáveis do Dashboard (Cronômetro e Jogadas)
+        let jogadas = 0;
+        let segundos = 0;
+        let cronometroIniciado = false;
+        let intervaloCronometro;
+
+        function atualizarDashboard() {
+            movesDisplay.innerText = jogadas === 1 ? '1 Jogada' : `${jogadas} Jogadas`;
+            const mins = String(Math.floor(segundos / 60)).padStart(2, '0');
+            const segs = String(segundos % 60).padStart(2, '0');
+            timerDisplay.innerText = `${mins}:${segs}`;
+        }
+
+        function iniciarCronometro() {
+            if (cronometroIniciado) return;
+            cronometroIniciado = true;
+            intervaloCronometro = setInterval(() => {
+                segundos++;
+                atualizarDashboard();
+            }, 1000);
+        }
+
+        function pararCronometro() {
+            clearInterval(intervaloCronometro);
+            cronometroIniciado = false;
+        }
+
         function iniciarJogo() {
             modal.style.display = 'none';
             board.innerHTML = '';
@@ -216,6 +275,12 @@
             bloquearTabuleiro = false;
             cancelAnimationFrame(animacaoConfete);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Reseta Dashboard
+            pararCronometro();
+            jogadas = 0;
+            segundos = 0;
+            atualizarDashboard();
 
             cartas = [...imagens, ...imagens];
             cartas.sort(() => Math.random() - 0.5);
@@ -238,6 +303,8 @@
         }
 
         function virarCarta() {
+            iniciarCronometro(); // O tempo começa a rodar no primeiro clique
+
             if (bloquearTabuleiro) return;
             if (this === primeiraCarta) return;
 
@@ -253,6 +320,9 @@
         }
 
         function verificarPar() {
+            jogadas++; // Conta uma jogada a cada par virado
+            atualizarDashboard();
+
             let ehPar = primeiraCarta.dataset.logo === segundaCarta.dataset.logo;
 
             if (ehPar) {
@@ -286,6 +356,13 @@
         }
 
         function finalizarJogo() {
+            pararCronometro();
+            const mins = String(Math.floor(segundos / 60)).padStart(2, '0');
+            const segs = String(segundos % 60).padStart(2, '0');
+            
+            // Atualiza o texto do pop-up de vitória
+            finalStats.innerText = `${mins}:${segs} e ${jogadas} jogadas!`;
+            
             modal.style.display = 'flex';
             fazerChoverConfete();
         }
@@ -294,13 +371,13 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             confetes = [];
-            const cores = ['#f2d74e', '#95c3de', '#e94a3f', '#3f9a65', '#a569bd', '#e67e22'];
+            const cores = ['#233a8a', '#1e8ecd', '#535353'];
 
-            for (let i = 0; i < 120; i++) {
+            for (let i = 0; i < 150; i++) {
                 confetes.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height - canvas.height,
-                    r: Math.random() * 6 + 4,
+                    r: Math.random() * 8 + 4,
                     d: Math.random() * canvas.height,
                     cor: cores[Math.floor(Math.random() * cores.length)],
                     tilt: Math.random() * 10 - 5,
@@ -311,25 +388,13 @@
 
             function desenharCena() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
                 confetes.forEach((c, index) => {
                     c.tiltAngle += c.tiltAngleIncremental;
                     c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
                     c.tilt = Math.sin(c.tiltAngle - index / 3) * 15;
-
                     if (c.y > canvas.height) {
-                        confetes[index] = {
-                            x: Math.random() * canvas.width,
-                            y: -20,
-                            r: c.r,
-                            d: c.d,
-                            cor: c.cor,
-                            tilt: c.tilt,
-                            tiltAngleIncremental: c.tiltAngleIncremental,
-                            tiltAngle: c.tiltAngle
-                        };
+                        confetes[index] = { ...c, x: Math.random() * canvas.width, y: -20 };
                     }
-
                     ctx.beginPath();
                     ctx.lineWidth = c.r;
                     ctx.strokeStyle = c.cor;
@@ -337,7 +402,6 @@
                     ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
                     ctx.stroke();
                 });
-
                 animacaoConfete = requestAnimationFrame(desenharCena);
             }
             desenharCena();
