@@ -26,10 +26,10 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            padding: 4vh 0; /* Ajustei levemente o padding para acomodar a logo */
+            padding: 4vh 0; 
         }
 
-        /* --- CABEÇALHO (LOGO, TÍTULO E DASHBOARD) --- */
+        /* --- CABEÇALHO --- */
         .header {
             text-align: center;
             color: #ffffff;
@@ -39,19 +39,20 @@
             align-items: center;
         }
 
-/* Estilo específico para a logo do Sistema S (512x512) */
+        /* AJUSTE: Logo horizontal maior */
         .logo-topo {
-            /* Aumentamos os valores aqui: mínimo 90px, ideal 15vh, máximo 180px */
-            height: clamp(90px, 15vh, 180px); 
+            height: clamp(80px, 14vh, 140px); /* Aumentado de 110px para 140px no máximo */
             width: auto; 
             margin-bottom: 1.5vh;
             filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5)); 
             object-fit: contain;
+            max-width: 85vw; 
         }
 
+        /* AJUSTE: Título menor e mais discreto */
         h1 {
             font-weight: 900;
-            font-size: clamp(1.8rem, 6vw, 3.5rem); /* Diminuí um pouquinho para caber a logo tranquilamente */
+            font-size: clamp(1.4rem, 4.5vw, 2.3rem); /* Diminuído o tamanho geral da fonte */
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
@@ -82,7 +83,7 @@
             grid-template-rows: repeat(4, 1fr);
             gap: 2vw;
             width: 85vw;
-            height: 55vh; /* Ajustado levemente para dar espaço à logo */
+            height: 55vh; 
             max-width: 600px;
             perspective: 1000px;
         }
@@ -205,8 +206,7 @@
 <body>
 
     <div class="header">
-        <img src="img/logo-sistema-s.png" alt="Logo Sistema S" class="logo-topo">
-        
+        <img src="img/logo-sistema-s.png" alt="Logo" class="logo-topo">
         <h1>Encontre os Pares</h1>
         <div class="dashboard">
             <span id="timer-display">00:00</span>
@@ -267,6 +267,7 @@
 
         function iniciarCronometro() {
             if (cronometroIniciado) return;
+            crononceiroIniciado = true;
             cronometroIniciado = true;
             intervaloCronometro = setInterval(() => {
                 segundos++;
@@ -346,6 +347,10 @@
             } else {
                 desvirarCartas();
             }
+        }
+
+        function abrirModal() {
+            modal.style.display = 'flex';
         }
 
         function desabilitarCartas() {
