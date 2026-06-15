@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Memória - FIEMG</title>
+    <title>Jogo da Memória - FIEMG (Totem)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
 
@@ -22,23 +22,36 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* Distribui topo, meio e base pela tela toda */
+            justify-content: space-between; 
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            padding: 5vh 0; /* Margem no topo e embaixo */
+            padding: 4vh 0; /* Ajustei levemente o padding para acomodar a logo */
         }
 
-        /* --- CABEÇALHO (TÍTULO E DASHBOARD) --- */
+        /* --- CABEÇALHO (LOGO, TÍTULO E DASHBOARD) --- */
         .header {
             text-align: center;
             color: #ffffff;
             width: 90vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+/* Estilo específico para a logo do Sistema S (512x512) */
+        .logo-topo {
+            /* Aumentamos os valores aqui: mínimo 90px, ideal 15vh, máximo 180px */
+            height: clamp(90px, 15vh, 180px); 
+            width: auto; 
+            margin-bottom: 1.5vh;
+            filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5)); 
+            object-fit: contain;
         }
 
         h1 {
             font-weight: 900;
-            font-size: clamp(2rem, 7vw, 4rem);
+            font-size: clamp(1.8rem, 6vw, 3.5rem); /* Diminuí um pouquinho para caber a logo tranquilamente */
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
@@ -49,7 +62,7 @@
             display: flex;
             justify-content: center;
             gap: 5vw;
-            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-size: clamp(1.1rem, 3.5vw, 1.8rem);
             font-weight: 700;
             color: #f7f9f8;
             text-shadow: 1px 2px 5px rgba(0,0,0,0.5);
@@ -69,7 +82,7 @@
             grid-template-rows: repeat(4, 1fr);
             gap: 2vw;
             width: 85vw;
-            height: 60vh; /* Ajustado para deixar espaço pro header e footer */
+            height: 55vh; /* Ajustado levemente para dar espaço à logo */
             max-width: 600px;
             perspective: 1000px;
         }
@@ -80,7 +93,7 @@
             position: relative;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1); /* Animação mais fluida */
+            transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1); 
             cursor: pointer;
         }
 
@@ -98,12 +111,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 15px; /* Bordas mais arredondadas como nas fotos */
+            border-radius: 15px; 
             box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
 
         .card-back {
-            background: linear-gradient(135deg, #1e8ecd, #233a8a); /* Degradê azul nas cartas */
+            background: linear-gradient(135deg, #1e8ecd, #233a8a); 
             color: white;
             font-size: clamp(2.5rem, 8vw, 4.5rem);
             font-weight: 900;
@@ -132,7 +145,6 @@
             justify-content: center;
         }
 
-        /* Aqui você pode colocar a tag <img> com o logo da FIEMG depois */
         .logo-placeholder {
             color: rgba(255,255,255,0.7);
             font-weight: 900;
@@ -193,6 +205,8 @@
 <body>
 
     <div class="header">
+        <img src="img/logo-sistema-s.png" alt="Logo Sistema S" class="logo-topo">
+        
         <h1>Encontre os Pares</h1>
         <div class="dashboard">
             <span id="timer-display">00:00</span>
@@ -239,7 +253,6 @@
         let animacaoConfete;
         let confetes = [];
 
-        // Variáveis do Dashboard (Cronômetro e Jogadas)
         let jogadas = 0;
         let segundos = 0;
         let cronometroIniciado = false;
@@ -276,7 +289,6 @@
             cancelAnimationFrame(animacaoConfete);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Reseta Dashboard
             pararCronometro();
             jogadas = 0;
             segundos = 0;
@@ -303,7 +315,7 @@
         }
 
         function virarCarta() {
-            iniciarCronometro(); // O tempo começa a rodar no primeiro clique
+            iniciarCronometro(); 
 
             if (bloquearTabuleiro) return;
             if (this === primeiraCarta) return;
@@ -320,7 +332,7 @@
         }
 
         function verificarPar() {
-            jogadas++; // Conta uma jogada a cada par virado
+            jogadas++; 
             atualizarDashboard();
 
             let ehPar = primeiraCarta.dataset.logo === segundaCarta.dataset.logo;
@@ -360,7 +372,6 @@
             const mins = String(Math.floor(segundos / 60)).padStart(2, '0');
             const segs = String(segundos % 60).padStart(2, '0');
             
-            // Atualiza o texto do pop-up de vitória
             finalStats.innerText = `${mins}:${segs} e ${jogadas} jogadas!`;
             
             modal.style.display = 'flex';
