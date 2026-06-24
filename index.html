@@ -208,6 +208,9 @@
         .btn-restart:hover { background-color: #233a8a; transform: scale(1.05); }
 
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 11; }
+
+        #timer-display { transition: color 0.3s; }
+        #timer-display.urgente { color: #ff4444; border-color: rgba(255,68,68,0.5); background-color: rgba(255,68,68,0.15); }
     </style>
 </head>
 <body>
@@ -215,6 +218,7 @@
     <div class="header">
         <h1>Encontre os Pares</h1>
         <div class="dashboard">
+            <span id="timer-display">60</span>
             <span id="moves-display">0 Jogadas</span>
         </div>
     </div>
@@ -265,6 +269,7 @@
         const timeoutModal = document.getElementById('timeout-modal');
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
+        const timerDisplay = document.getElementById('timer-display');
         const movesDisplay = document.getElementById('moves-display');
         const finalStats = document.getElementById('final-stats');
 
@@ -290,6 +295,13 @@
 
         function atualizarDashboard() {
             movesDisplay.innerText = jogadas === 1 ? '1 Jogada' : `${jogadas} Jogadas`;
+            const restante = TEMPO_LIMITE - segundos;
+            timerDisplay.innerText = restante + 's';
+            if (restante <= 10) {
+                timerDisplay.classList.add('urgente');
+            } else {
+                timerDisplay.classList.remove('urgente');
+            }
         }
 
         function iniciarCronometro() {
@@ -297,6 +309,7 @@
             cronometroIniciado = true;
             intervaloCronometro = setInterval(() => {
                 segundos++;
+                atualizarDashboard();
                 if (segundos >= TEMPO_LIMITE) {
                     pararCronometro();
                     tempoEsgotado();
