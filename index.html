@@ -11,6 +11,15 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            
+            /* BLINDAGEM: Impede a seleção de texto e o "highlight" azul ao arrastar o dedo na tela */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            
+            /* BLINDAGEM: Remove o menu de toque longo em dispositivos touch */
+            -webkit-touch-callout: none; 
         }
 
         body {
@@ -26,7 +35,9 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            padding: 4vh 0; 
+            
+            /* ERGONOMIA: 5vh no topo, e 12vh em baixo para empurrar as cartas mais para cima e fugir do chão */
+            padding: 5vh 0 12vh 0; 
         }
 
         /* --- CABEÇALHO --- */
@@ -39,20 +50,9 @@
             align-items: center;
         }
 
-        /* AJUSTE: Logo horizontal maior */
-        .logo-topo {
-            height: clamp(80px, 14vh, 140px); /* Aumentado de 110px para 140px no máximo */
-            width: auto; 
-            margin-bottom: 1.5vh;
-            filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5)); 
-            object-fit: contain;
-            max-width: 85vw; 
-        }
-
-        /* AJUSTE: Título menor e mais discreto */
         h1 {
             font-weight: 900;
-            font-size: clamp(1.4rem, 4.5vw, 2.3rem); /* Diminuído o tamanho geral da fonte */
+            font-size: clamp(1.6rem, 5vw, 2.8rem); /* Levemente ajustado pois agora está no topo sozinho */
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
@@ -126,31 +126,38 @@
             border: 2px solid rgba(255,255,255,0.2);
         }
 
-         .card-front {
+        .card-front {
             background-color: #fff;
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
-            padding: 5%; /* DIMINUA AQUI (antes era 15%) */
+            padding: 5%; /* Ajustado para 5% para as logos ficarem maiores */
             z-index: 1;
         }
 
         .card.flip .card-back { opacity: 0; visibility: hidden; z-index: 1; }
         .card.flip .card-front { z-index: 2; }
-        .card-front img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        /* BLINDAGEM: Impede interações padrão nas imagens */
+        .card-front img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain;
+            pointer-events: none; /* O clique vai para a carta, não para a imagem em si */
+        }
 
-        /* --- RODAPÉ --- */
+        /* --- RODAPÉ COM A NOVA LOGO --- */
         .footer {
-            height: 5vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .logo-placeholder {
-            color: rgba(255,255,255,0.7);
-            font-weight: 900;
-            font-size: 1.5rem;
-            letter-spacing: 5px;
+        .logo-rodape {
+            height: clamp(60px, 10vh, 120px); /* Tamanho adaptável da logo na parte de baixo */
+            width: auto;
+            filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5)); 
+            object-fit: contain;
+            max-width: 85vw;
         }
 
         /* --- MODAL DE VITÓRIA --- */
@@ -206,7 +213,6 @@
 <body>
 
     <div class="header">
-        <img src="img/logo-sistema-s.png" alt="Logo" class="logo-topo">
         <h1>Encontre os Pares</h1>
         <div class="dashboard">
             <span id="timer-display">00:00</span>
@@ -217,7 +223,7 @@
     <div class="game-board" id="game-board"></div>
 
     <div class="footer">
-        <span class="logo-placeholder">FIEMG</span>
+        <img src="img/logo-sistema-s.png" alt="Logo do Sistema S" class="logo-rodape">
     </div>
 
     <div class="modal" id="win-modal">
@@ -232,6 +238,20 @@
     <canvas id="confetti-canvas"></canvas>
 
     <script>
+        // --- BLINDAGEM DO JAVASCRIPT ---
+        
+        // 1. Bloqueia o clique direito / menu de contexto
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        // 2. Bloqueia o "arrastar" de imagens (drag and drop) que cria uma imagem fantasma seguindo o dedo
+        document.addEventListener('dragstart', function(event) {
+            event.preventDefault();
+        });
+
+
+        // --- LÓGICA DO JOGO ---
         const board = document.getElementById('game-board');
         const modal = document.getElementById('win-modal');
         const canvas = document.getElementById('confetti-canvas');
@@ -267,7 +287,6 @@
 
         function iniciarCronometro() {
             if (cronometroIniciado) return;
-            crononceiroIniciado = true;
             cronometroIniciado = true;
             intervaloCronometro = setInterval(() => {
                 segundos++;
@@ -347,10 +366,6 @@
             } else {
                 desvirarCartas();
             }
-        }
-
-        function abrirModal() {
-            modal.style.display = 'flex';
         }
 
         function desabilitarCartas() {
