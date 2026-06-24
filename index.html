@@ -215,7 +215,6 @@
     <div class="header">
         <h1>Encontre os Pares</h1>
         <div class="dashboard">
-            <span id="timer-display">00:00</span>
             <span id="moves-display">0 Jogadas</span>
         </div>
     </div>
@@ -230,8 +229,17 @@
         <div class="modal-content">
             <h2>Parabéns! 🎉</h2>
             <p>Você completou o desafio em:</p>
-            <span class="destaque" id="final-stats">00:00 e 0 jogadas</span>
+            <span class="destaque" id="final-stats">0 jogadas</span>
             <button class="btn-restart" onclick="iniciarJogo()">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <div class="modal" id="timeout-modal">
+        <div class="modal-content">
+            <h2 style="color:#c0392b;">⏰ Tempo Esgotado!</h2>
+            <p>Não foi dessa vez...</p>
+            <span class="destaque" style="color:#c0392b;">O tempo de 60 segundos acabou.<br>Tente novamente!</span>
+            <button class="btn-restart" onclick="iniciarJogo()" style="background-color:#c0392b;">Tentar Novamente</button>
         </div>
     </div>
 
@@ -254,9 +262,9 @@
         // --- LÓGICA DO JOGO ---
         const board = document.getElementById('game-board');
         const modal = document.getElementById('win-modal');
+        const timeoutModal = document.getElementById('timeout-modal');
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
-        const timerDisplay = document.getElementById('timer-display');
         const movesDisplay = document.getElementById('moves-display');
         const finalStats = document.getElementById('final-stats');
 
@@ -278,11 +286,10 @@
         let cronometroIniciado = false;
         let intervaloCronometro;
 
+        const TEMPO_LIMITE = 60;
+
         function atualizarDashboard() {
             movesDisplay.innerText = jogadas === 1 ? '1 Jogada' : `${jogadas} Jogadas`;
-            const mins = String(Math.floor(segundos / 60)).padStart(2, '0');
-            const segs = String(segundos % 60).padStart(2, '0');
-            timerDisplay.innerText = `${mins}:${segs}`;
         }
 
         function iniciarCronometro() {
@@ -290,7 +297,10 @@
             cronometroIniciado = true;
             intervaloCronometro = setInterval(() => {
                 segundos++;
-                atualizarDashboard();
+                if (segundos >= TEMPO_LIMITE) {
+                    pararCronometro();
+                    tempoEsgotado();
+                }
             }, 1000);
         }
 
@@ -299,8 +309,14 @@
             cronometroIniciado = false;
         }
 
+        function tempoEsgotado() {
+            bloquearTabuleiro = true;
+            timeoutModal.style.display = 'flex';
+        }
+
         function iniciarJogo() {
             modal.style.display = 'none';
+            timeoutModal.style.display = 'none';
             board.innerHTML = '';
             paresEncontrados = 0;
             primeiraCarta = null;
@@ -389,11 +405,7 @@
 
         function finalizarJogo() {
             pararCronometro();
-            const mins = String(Math.floor(segundos / 60)).padStart(2, '0');
-            const segs = String(segundos % 60).padStart(2, '0');
-            
-            finalStats.innerText = `${mins}:${segs} e ${jogadas} jogadas!`;
-            
+            finalStats.innerText = `${jogadas} jogadas!`;
             modal.style.display = 'flex';
             fazerChoverConfete();
         }
